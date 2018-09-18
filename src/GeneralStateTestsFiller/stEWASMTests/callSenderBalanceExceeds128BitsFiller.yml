@@ -9,7 +9,7 @@ callSenderBalanceExceeds128Bits:
     previousHash: 5e20a0453cecd065ea59c37ac63e079ee08998b6045136a8ce6635c7912ec0b6
   pre:
     a94f5374fce5edbc8e2a8697c15331677e6ebf0b:
-      balance: 340282366920938463463374607431768211600
+      balance: 100000000000
       code: ''
       nonce: '0x4'
       storage: {}
@@ -77,7 +77,7 @@ callSenderBalanceExceeds128Bits:
           )
         )
     deadbeef00000000000000000000000000000000:
-      balance: 100000000000
+      balance: 340282366920938463463374607431768211600
       nonce: ''
       storage: {}
       code: |
@@ -145,13 +145,12 @@ callSenderBalanceExceeds128Bits:
       network:
         - ALL
       result:
+        # Balances remain the same as because of:
+        # InternalError: Account balance (or transaction value) exceeds 128 bits
         a94f5374fce5edbc8e2a8697c15331677e6ebf0b:
-          # Balance should be updated to deduct gas cost
-          balance: 340282366920938463463374607431768168195
+          balance: 100000000000
         deadbeef00000000000000000000000000000000:
-          # Balance should be updated to deduct value in CALL
-          # balance = 100000000000 - 0xbeef (48879) = 99999951121
-          balance: 99999951121
+          balance: 340282366920938463463374607431768211600
           storage: {
             # Expect success from CALL
             1: "0"
@@ -163,9 +162,7 @@ callSenderBalanceExceeds128Bits:
             # Received data
             11: ""
           }
-          # Balance should be updated to include value in CALL
-          # balance = 100000000000 + 0xbeef (48879) = 100000048879
-          balance: 100000048879
+          balance: 100000000000
   transaction:
     data:
     - '0x'

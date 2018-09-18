@@ -58,10 +58,10 @@ createRevert:
             (local $memPointerStorageKey2 i32)
             (local $memPointerCreateValue i32)
             (local $memPointerCreateResult i32)
+            (local $memPointerCreateRetCode i32)
 
             ;; Location and length of code stored in (data) section above
             (set_local $codeMemLoc (i32.const 256))
-            (set_local $codeLen (i32.const 91))
             (set_local $addrOffset (i32.const 224))
 
             ;; memory layout and pointers
@@ -69,6 +69,7 @@ createRevert:
             (set_local $memPointerStorageKey2 (i32.const 32))
             (set_local $memPointerCreateValue (i32.const 64))
             (set_local $memPointerCreateResult (i32.const 96))
+            (set_local $memPointerCreateRetCode (i32.const 128))
 
             ;; get external code
             (set_local $codeLen 
@@ -86,8 +87,7 @@ createRevert:
             (i32.store (get_local $memPointerCreateValue) (i32.const 0x1234))
 
             ;; call CREATE and store the return success/failure value
-            (call $storageStore
-              (get_local $memPointerStorageKey1)
+            (i32.store (get_local $memPointerCreateRetCode)
               (call $create
                 ;; value offset
                 (get_local $memPointerCreateValue)
@@ -96,9 +96,11 @@ createRevert:
                 ;; data length
                 (get_local $codeLen)
                 ;; result offset (new contract address)
-                (get_local $memPointerCreateResult)
-              )
-            )
+                (get_local $memPointerCreateResult)))
+
+            (call $storageStore
+              (get_local $memPointerStorageKey1)
+              (get_local $memPointerCreateRetCode))
 
             ;; store the result (new contract address)
             (call $storageStore
@@ -116,12 +118,12 @@ createRevert:
         - ALL
       result:
         a94f5374fce5edbc8e2a8697c15331677e6ebf0b:
-          balance: '99999935591'
+          balance: '99999920591'
         deadbeef00000000000000000000000000000000:
           storage: {
-            # Expect CREATE to return success
+            # Expect CREATE to return REVERT=2
             # $memPointerStorageKey1 = 0
-            0: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            0: '0x0200000000000000000000000000000000000000000000000000000000000000',
             # Expect CREATE result to be empty
             # $memPointerStorageKey2 = 1
             1: ''
